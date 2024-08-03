@@ -10,10 +10,8 @@ function Square({ value, onSquareClick }) {
 }
 
 // NOTE: This is the default function
-export default function Board() {
+function Board({ xIsNext, square, onPlay }) {
   //NOTE:Variable  definitions and declarations
-  const [xIsNext, setxIsNext] = useState(true);
-  const [square, setSquare] = useState(Array(9).fill(null));
   const winner = calculateWinner(square);
   let status;
 
@@ -51,7 +49,7 @@ export default function Board() {
 
   //HACK: This function manages the state of all square buttions
   function handleClick(i) {
-    if (square[i] || calculateWinner(square)) {
+    if (calculateWinner(square) || square[i]) {
       return;
     }
     const nextSquare = square.slice();
@@ -60,8 +58,7 @@ export default function Board() {
     } else {
       nextSquare[i] = "O";
     }
-    setSquare(nextSquare);
-    setxIsNext(!xIsNext);
+    onPlay(nextSquare);
   }
 
   return (
@@ -83,5 +80,45 @@ export default function Board() {
         <Square value={square[8]} onSquareClick={() => handleClick(8)} />
       </div>
     </>
+  );
+}
+
+export default function Game() {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const currentSquare = history[history.length - 1];
+
+  function handleClick(nextSquare) {
+    setHistory([...history, nextSquare]);
+    setXIsNext(!xIsNext);
+  }
+
+  function jumpTo(nextMove) {
+    //TODO:Add functionality to jump to moves
+  }
+
+  const move = history.map((squares, move) => {
+    let description;
+    if (move > 0) {
+      description = "Go to move #" + move;
+    } else {
+      description = "Go to game start";
+    }
+    return (
+      <li>
+        <button onClick={jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} square={currentSquare} onPlay={handleClick} />
+      </div>
+      <div className="game-info">
+        <ol>{move}</ol>
+      </div>
+    </div>
   );
 }
