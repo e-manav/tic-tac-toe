@@ -87,6 +87,7 @@ export default function Game() {
   const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const currentSquare = history[history.length - 1];
+  const [currentMove, setCurrentMove] = useState(0);
 
   function handleClick(nextSquare) {
     setHistory([...history, nextSquare]);
